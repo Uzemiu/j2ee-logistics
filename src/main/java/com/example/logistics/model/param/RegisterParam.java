@@ -18,6 +18,7 @@ public class RegisterParam {
             message = "密码长度须在6~31个字符之间且只能包含大小写字母，数字与@#$%^&*()_+!")
     private String password;
 
+    @Length(max = 1023, message = "邮箱不能超过1023个字符")
     @Email(message = "邮件格式不合法")
     @NotBlank(message = "邮箱不能为空")
     private String email;

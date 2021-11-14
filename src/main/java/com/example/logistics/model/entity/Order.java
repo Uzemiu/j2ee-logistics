@@ -41,6 +41,9 @@ public class Order extends BaseEntity{
     @Column(name = "item_volume", columnDefinition = "decimal(19,2) default 0.0")
     private Double itemVolume;
 
+    @Column(name = "item_count", columnDefinition = "int(11) default 1", nullable = false)
+    private Integer itemCount;
+
     /**
      * 订单价格
      */
@@ -62,7 +65,7 @@ public class Order extends BaseEntity{
     @Column(name = "receiver_name", columnDefinition = "varchar(31)", nullable = false)
     private String receiverName;
 
-    @Column(name = "order_status", nullable = false)
+    @Column(name = "order_status", columnDefinition = "int(11) default 0", nullable = false)
     private OrderStatus status;
 
     @Column(name = "comment", columnDefinition = "varchar(1023) default ''")

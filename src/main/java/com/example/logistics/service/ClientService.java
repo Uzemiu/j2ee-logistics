@@ -17,12 +17,4 @@ public interface ClientService extends UserService<Client> {
      */
     Client register(RegisterParam param);
 
-    /**
-     *
-     * @param param
-     * @return 登陆成功返回登录用户信息
-     * @throws IllegalArgumentException 登录失败
-     */
-    Client login(LoginParam param);
-
 }

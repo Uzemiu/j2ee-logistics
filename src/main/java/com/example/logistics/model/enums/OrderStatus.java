@@ -27,7 +27,27 @@ public enum OrderStatus {
      */
     RECEIPT_CONFIRMED,
     /**
+     * 已取消
+     */
+    CANCELLED,
+    /**
      * 丢失
      */
-    LOST,
+    LOST;
+
+    public boolean lessThan(OrderStatus status){
+        return ordinal() < status.ordinal();
+    }
+
+    public boolean greaterThan(OrderStatus status){
+        return ordinal() > status.ordinal();
+    }
+
+    public boolean lessThanOrEqual(OrderStatus status){
+        return ordinal() <= status.ordinal();
+    }
+
+    public boolean greaterThanOeEqual(OrderStatus status){
+        return ordinal() >= status.ordinal();
+    }
 }

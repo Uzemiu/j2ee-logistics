@@ -2,8 +2,10 @@ package com.example.logistics.service.base;
 
 import com.example.logistics.exception.ResouceNotFoundException;
 import com.example.logistics.repository.BaseRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
+import javax.swing.text.html.parser.Entity;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;

@@ -34,7 +34,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             Permission permission = method.getMethodAnnotation(Permission.class);
             Role[] roles = {Role.ADMIN}; // if there is no @Permission, only admin is allowed
             if(permission != null){
-                if(user instanceof Client && permission.allowClient()){
+                if(user instanceof Client && permission.allowClient()
+                        || user instanceof Employee && permission.allowEmployee()){
                     return true;
                 }
                 roles = permission.allowRoles();

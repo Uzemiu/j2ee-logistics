@@ -12,5 +12,7 @@ public @interface Permission {
 
     boolean allowClient() default false;
 
+    boolean allowEmployee() default false;
+
     Role[] allowRoles() default {};
 }

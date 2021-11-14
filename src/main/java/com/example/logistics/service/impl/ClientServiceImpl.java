@@ -27,22 +27,11 @@ public class ClientServiceImpl extends AbstractUserService<Client> implements Cl
 
     @Override
     public Client register(RegisterParam param) {
-        Assert.isTrue(clientRepository.countByUsername(param.getUsername()) == 0, "该用户名已被注册");
-        Assert.isTrue(clientRepository.countByEmail(param.getEmail()) == 0,"该邮箱已被注册");
-        Assert.isTrue(clientRepository.countByPhoneNumber(param.getPhoneNumber()) == 0, "该手机号已被注册");
-
+        checkUniqueColumn(param.getUsername(), param.getEmail(), param.getPhoneNumber());
         Client client = new Client();
         BeanUtils.copyProperties(param, client);
         String encryptPassword = BCrypt.hashpw(param.getPassword(), BCrypt.gensalt());
         client.setPassword(encryptPassword);
         return clientRepository.save(client);
-    }
-
-    @Override
-    public Client login(LoginParam param) {
-        Client client = clientRepository.findByUsername(param.getUsername())
-                .orElseThrow(() -> new BadRequestException("用户名或密码错误"));
-        Assert.isTrue(BCrypt.checkpw(param.getPassword(), client.getPassword()),"用户名或密码错误");
-        return client;
     }
 }

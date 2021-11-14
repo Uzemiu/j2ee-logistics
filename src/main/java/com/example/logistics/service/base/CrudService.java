@@ -1,5 +1,6 @@
 package com.example.logistics.service.base;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,5 +26,4 @@ public interface CrudService<ENTITY, ID> {
     long deleteByIdIn(Collection<ID> ids);
 
     long count();
-
 }

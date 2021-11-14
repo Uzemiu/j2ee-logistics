@@ -14,7 +14,7 @@ public class BaseResponse<T> {
     private T data;
 
     public static <T> BaseResponse<T> ok(){
-        return new BaseResponse<>(200,"",null);
+        return new BaseResponse<>(200,"ok",null);
     }
 
     public static <T> BaseResponse<T> ok(String message, T data){
@@ -26,7 +26,7 @@ public class BaseResponse<T> {
     }
 
     public static <T> BaseResponse<T> error(){
-        return new BaseResponse<>(400,"",null);
+        return new BaseResponse<>(400,"error",null);
     }
 
     public static <T> BaseResponse<T> error(String message, T data){
