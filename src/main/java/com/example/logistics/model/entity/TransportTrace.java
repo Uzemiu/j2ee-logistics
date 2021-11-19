@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -27,6 +28,9 @@ public class TransportTrace extends BaseEntity {
 
     @Column(name = "information", columnDefinition = "varchar(255) default ''")
     private String information;
+
+    @Column(name = "trace_time")
+    private Date traceTime;
 
     @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus;

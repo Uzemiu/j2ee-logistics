@@ -40,7 +40,7 @@ public class OrderController {
                                                           direction = Sort.Direction.DESC) Pageable pageable){
         query.setSender((Client) SecurityUtil.getCurrentUser());
         Page<Order> orders = orderService.queryBy(query, pageable);
-        return BaseResponse.ok("ok", new PageDTO<>(orders));
+        return BaseResponse.ok("ok", new PageDTO<>(orders.map(orderService::toDto)));
     }
 
     @Permission(allowRoles = Role.ADMIN)
@@ -49,19 +49,21 @@ public class OrderController {
                                      @PageableDefault(sort = {"createTime"},
                                              direction = Sort.Direction.DESC) Pageable pageable){
         Page<Order> orders = orderService.queryBy(query, pageable);
-        return BaseResponse.ok("ok", new PageDTO<>(orders));
+        return BaseResponse.ok("ok", new PageDTO<>(orders.map(orderService::toDto)));
     }
 
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @GetMapping
     public BaseResponse<?> getOrderDetailById(@RequestBody Long id){
-
+        Order order = orderService.getNotNullById(id);
+        // TODO: 2021/11/14
         return BaseResponse.ok("ok");
     }
 
     @Permission(allowClient = true)
     @PostMapping
-    public BaseResponse<?> createOrder(@RequestBody Order order){
+    public BaseResponse<?> createOrder(@RequestBody @Validated Order order){
+        order.setSender((Client) SecurityUtil.getCurrentUser());
         order.setStatus(OrderStatus.NOT_PAID);
         order.setTransportVehicle(null);
         order.setPrice(BigDecimal.valueOf(Math.random() * 100));
@@ -71,51 +73,28 @@ public class OrderController {
 
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @PutMapping
-    public BaseResponse<?> updateOrder(@RequestBody Order order){
-        Order old = orderService.getNotNullById(order.getId());
+    public BaseResponse<?> updateOrder(@RequestBody @Validated Order order){
+        orderService.update(order);
+        return BaseResponse.ok();
+    }
 
-        User current = SecurityUtil.getCurrentUser();
-        if(current instanceof Client){
-            Assert.isTrue(old.getSender().equals(current), "你没有权限这么做");
-        }
-        if(old.getStatus().lessThanOrEqual(OrderStatus.NOT_SENT)){
-            // 未发货的情况下才能修改收寄件信息
-            old.setSendAddress(order.getSendAddress());
-            old.setSenderName(order.getSenderName());
-            old.setReceiveAddress(order.getReceiveAddress());
-            old.setReceiverName(order.getReceiverName());
-            old.setReceiverPhone(order.getReceiverPhone());
-            old.setItemName(order.getItemName());
-            old.setItemVolume(order.getItemVolume());
-            old.setItemWeight(order.getItemWeight());
-            old.setItemCount(order.getItemCount());
-            if(current instanceof Employee){
-                old.setTransportVehicle(order.getTransportVehicle());
-            }
-        }
-        old.setComment(order.getComment());
-        orderService.update(old);
+    public BaseResponse<?> assignIdleVehicle(){
+
         return BaseResponse.ok();
     }
 
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @PostMapping("cancel")
     public BaseResponse<?> cancelOrder(@RequestBody Long id){
-        Order order = orderService.getNotNullById(id);
-        if(order.getStatus().lessThan(OrderStatus.ALREADY_ARRIVED)){
-            // 订单已到达或已结束（确认收货，已取消，丢失）则不能取消订单
-            order.setStatus(OrderStatus.CANCELLED);
-            // ...省略无数操作
-        }
+        orderService.cancelOrder(id);
         return BaseResponse.ok();
     }
-
-//    @Permission(allowClient = true, allowRoles = Role.ADMIN)
-//    @PutMapping
-//    public BaseResponse<?> updateOrder(@Validated EmployeeDTO employee){
-//        orderService.update(BeanUtil.copyProperties(Order.class, employee));
-//        return BaseResponse.ok();
-//    }
+    
+    @PostMapping("confirm")
+    public BaseResponse<?> confirmOrder(@RequestBody Long id){
+        // TODO: 2021/11/17  
+        return BaseResponse.ok();
+    }
 
     @Permission(allowRoles = Role.ADMIN)
     @DeleteMapping

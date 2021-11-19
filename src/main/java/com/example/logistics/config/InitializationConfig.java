@@ -17,7 +17,7 @@ public class InitializationConfig {
 
     @EventListener
     public void setDefaultAdmin(ContextRefreshedEvent event){
-        if(employeeRepository.count() == 0){
+        if(employeeRepository.countByRole(Role.ADMIN) == 0){
             Employee admin = new Employee();
             admin.setRole(Role.ADMIN);
             admin.setRealName("管理员");

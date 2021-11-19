@@ -1,5 +1,6 @@
 package com.example.logistics.model.entity;
 
+import com.example.logistics.model.enums.VehicleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,8 +27,8 @@ public class Vehicle extends BaseEntity{
     @Column(name = "vehicle_number", columnDefinition = "varchar(31)", nullable = false)
     private String vehicleNumber;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", columnDefinition = "int(11) default 0")
+    private VehicleStatus status;
 
     @OneToOne
     @JoinColumn(name = "driver_id")

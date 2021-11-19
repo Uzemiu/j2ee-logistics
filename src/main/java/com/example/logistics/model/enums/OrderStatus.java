@@ -47,7 +47,7 @@ public enum OrderStatus {
         return ordinal() <= status.ordinal();
     }
 
-    public boolean greaterThanOeEqual(OrderStatus status){
+    public boolean greaterThanOrEqual(OrderStatus status){
         return ordinal() >= status.ordinal();
     }
 }
