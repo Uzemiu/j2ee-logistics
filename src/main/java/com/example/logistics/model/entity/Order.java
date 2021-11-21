@@ -37,7 +37,8 @@ public class Order extends BaseEntity{
     /**
      *
      */
-    @Length(min = 1, max = 127, message = "物品名称长度需在1~127个字符之间")
+    @NotNull(message = "物品名称不能为空")
+    @Length(max = 127, message = "物品名称长度需小于127个字符")
     @Column(name = "item_name", columnDefinition = "varchar(127)", nullable = false)
     private String itemName;
 
@@ -96,7 +97,7 @@ public class Order extends BaseEntity{
     /**
      * 分配车辆
      */
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transport_vehicle_id")
     private Vehicle transportVehicle;
 

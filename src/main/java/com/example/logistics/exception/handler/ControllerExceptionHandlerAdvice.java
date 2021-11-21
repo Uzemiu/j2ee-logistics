@@ -2,6 +2,7 @@ package com.example.logistics.exception.handler;
 
 import com.example.logistics.exception.BadRequestException;
 import com.example.logistics.exception.ForbiddenException;
+import com.example.logistics.exception.ResourceNotFoundException;
 import com.example.logistics.exception.UnauthenticatedException;
 import com.example.logistics.model.support.BaseResponse;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.InternalException;
@@ -58,5 +59,11 @@ public class ControllerExceptionHandlerAdvice {
     @ExceptionHandler(UnauthenticatedException.class)
     public BaseResponse<?> internalExceptionHandler(UnauthenticatedException exception){
         return new BaseResponse<>(401, exception.getMessage(), null);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public BaseResponse<?> notFoundExceptionHandler(ResourceNotFoundException exception){
+        return new BaseResponse<>(404, exception.getMessage(), null);
     }
 }

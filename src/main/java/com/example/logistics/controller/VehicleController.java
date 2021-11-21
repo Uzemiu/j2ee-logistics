@@ -35,24 +35,18 @@ public class VehicleController {
                                        @PageableDefault(sort = {"createTime"},
                                                direction = Sort.Direction.DESC) Pageable pageable){
         Page<Vehicle> vehicles = vehicleService.queryBy(query, pageable);
-        return BaseResponse.ok("ok", new PageDTO<>(vehicles));
+        return BaseResponse.ok("ok", new PageDTO<>(vehicles.map(vehicleService::toDto)));
     }
 
     @Permission(allowRoles = Role.ADMIN)
     @PostMapping
     public BaseResponse<?> addVehicle(@RequestBody @Validated Vehicle vehicle){
-        Assert.isTrue(vehicleService.countByDriver(vehicle.getDriver()) == 0, "一位司机只能被分配到一辆车");
-        vehicleService.create(vehicle);
-        return BaseResponse.ok("新增车辆成功");
+        return BaseResponse.ok("新增车辆成功", vehicleService.create(vehicle).getId());
     }
 
     @Permission(allowRoles = Role.ADMIN)
     @PutMapping
     public BaseResponse<?> updateVehicle(@RequestBody @Validated Vehicle vehicle){
-        Vehicle old = vehicleService.getNotNullById(vehicle.getId());
-        if(!Objects.equals(old.getDriver(), vehicle.getDriver())){
-            Assert.isTrue(vehicleService.countByDriver(vehicle.getDriver()) == 0, "一位司机只能被分配到一辆车");
-        }
         vehicleService.update(vehicle);
         return BaseResponse.ok("更新车辆信息成功");
     }

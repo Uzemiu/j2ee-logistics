@@ -67,6 +67,7 @@ public class EmployeeController {
     @Permission(allowRoles = Role.ADMIN)
     @DeleteMapping
     public BaseResponse<?> deleteEmployee(@RequestBody Long id){
+        // TODO: 11/20/2021 照理说应该判断员工是否有任务在身 
         employeeService.deleteById(id);
         return BaseResponse.ok();
     }

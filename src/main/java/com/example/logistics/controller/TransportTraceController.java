@@ -4,10 +4,13 @@ package com.example.logistics.controller;
 import com.example.logistics.annotation.Permission;
 import com.example.logistics.model.entity.Order;
 import com.example.logistics.model.entity.TransportTrace;
+import com.example.logistics.model.entity.Vehicle;
 import com.example.logistics.model.enums.OrderStatus;
 import com.example.logistics.model.enums.Role;
+import com.example.logistics.model.enums.VehicleStatus;
 import com.example.logistics.model.support.BaseResponse;
 import com.example.logistics.repository.TransportTraceRepository;
+import com.example.logistics.repository.VehicleRepository;
 import com.example.logistics.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,8 @@ import java.util.Random;
 public class TransportTraceController {
 
     private final TransportTraceRepository transportTraceRepository;
+
+    private final VehicleRepository vehicleRepository;
 
     private final OrderService orderService;
 
@@ -48,11 +53,22 @@ public class TransportTraceController {
             trace.setOrderStatus(orderStatuses[traceStatus]);
             traces.add(trace);
         }
-        if(order.getStatus().lessThan(OrderStatus.RECEIPT_CONFIRMED)){
-            order.setStatus(orderStatuses[traceStatus - 1]);
-        }
-        orderService.update(order);
         transportTraceRepository.saveAll(traces);
+
+        if(order.getStatus().lessThan(OrderStatus.RECEIPT_CONFIRMED)){
+            // 用户没有提前确认收货
+            order.setStatus(orderStatuses[traceStatus - 1]);
+            orderService.update(order);
+        }
+
+        if(traceStatus == endStatus - 1){
+            // 模拟送货完成，设置车辆状态
+            Vehicle vehicle = order.getTransportVehicle();
+            if(vehicle != null){
+                vehicle.setStatus(VehicleStatus.IDLE);
+                vehicleRepository.save(vehicle);
+            }
+        }
 
         return BaseResponse.ok();
     }

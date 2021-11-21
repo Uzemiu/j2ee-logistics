@@ -50,4 +50,14 @@ public enum OrderStatus {
     public boolean greaterThanOrEqual(OrderStatus status){
         return ordinal() >= status.ordinal();
     }
+
+    /**
+     *
+     * @param s1 included
+     * @param s2 included
+     * @return
+     */
+    public boolean between(OrderStatus s1, OrderStatus s2){
+        return ordinal() >= s1.ordinal() && ordinal() <= s2.ordinal();
+    }
 }

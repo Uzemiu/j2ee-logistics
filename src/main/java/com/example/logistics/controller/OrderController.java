@@ -3,15 +3,15 @@ package com.example.logistics.controller;
 import com.example.logistics.annotation.AnonymousAccess;
 import com.example.logistics.annotation.Permission;
 import com.example.logistics.model.dto.OrderDTO;
+import com.example.logistics.model.dto.OrderDetailDTO;
 import com.example.logistics.model.dto.PageDTO;
-import com.example.logistics.model.entity.Client;
-import com.example.logistics.model.entity.Employee;
-import com.example.logistics.model.entity.Order;
-import com.example.logistics.model.entity.User;
+import com.example.logistics.model.dto.TransportTraceDTO;
+import com.example.logistics.model.entity.*;
 import com.example.logistics.model.enums.OrderStatus;
 import com.example.logistics.model.enums.Role;
 import com.example.logistics.model.query.OrderQuery;
 import com.example.logistics.model.support.BaseResponse;
+import com.example.logistics.repository.TransportTraceRepository;
 import com.example.logistics.service.OrderService;
 import com.example.logistics.utils.BeanUtil;
 import com.example.logistics.utils.SecurityUtil;
@@ -25,6 +25,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/order")
@@ -32,6 +34,8 @@ import java.math.BigDecimal;
 public class OrderController {
 
     private final OrderService orderService;
+
+    private final TransportTraceRepository transportTraceRepository;
 
     @Permission(allowClient = true)
     @GetMapping("/mine")
@@ -56,8 +60,15 @@ public class OrderController {
     @GetMapping
     public BaseResponse<?> getOrderDetailById(@RequestBody Long id){
         Order order = orderService.getNotNullById(id);
-        // TODO: 2021/11/14
-        return BaseResponse.ok("ok");
+        List<TransportTrace> transportTraces = transportTraceRepository.findByOrder(order);
+
+        OrderDetailDTO dto = new OrderDetailDTO();
+        dto.setOrder(orderService.toDto(order));
+        dto.setTraces(
+                transportTraces.stream()
+                        .map(t -> new TransportTraceDTO(t.getId(), t.getInformation(), t.getOrderStatus()))
+                        .collect(Collectors.toList()));
+        return BaseResponse.ok("ok", dto);
     }
 
     @Permission(allowClient = true)
@@ -78,8 +89,9 @@ public class OrderController {
         return BaseResponse.ok();
     }
 
+    @Permission(allowRoles = Role.ADMIN)
     public BaseResponse<?> assignIdleVehicle(){
-
+        // TODO: 11/20/2021
         return BaseResponse.ok();
     }
 
@@ -89,16 +101,18 @@ public class OrderController {
         orderService.cancelOrder(id);
         return BaseResponse.ok();
     }
-    
+
+    @Permission(allowClient = true)
     @PostMapping("confirm")
     public BaseResponse<?> confirmOrder(@RequestBody Long id){
-        // TODO: 2021/11/17  
+        orderService.confirmOrder(id);
         return BaseResponse.ok();
     }
 
     @Permission(allowRoles = Role.ADMIN)
     @DeleteMapping
     public BaseResponse<?> deleteOrder(@RequestBody Long id){
+        // TODO: 11/20/2021  
         orderService.deleteById(id);
         return BaseResponse.ok();
     }

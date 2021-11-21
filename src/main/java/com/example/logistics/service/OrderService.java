@@ -15,4 +15,6 @@ public interface OrderService extends CrudService<Order, Long> {
 
     OrderDTO toDto(Order order);
 
+    void confirmOrder(Long id);
+
 }

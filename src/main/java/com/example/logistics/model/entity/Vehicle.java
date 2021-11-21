@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * 车辆信息管理
@@ -24,6 +26,8 @@ public class Vehicle extends BaseEntity{
     @Column(name = "vehicle_id")
     private Long id;
 
+    @NotNull(message = "车牌号不能为空")
+    @Length(max = 31, message = "车牌号长度补鞥拆过31个字符")
     @Column(name = "vehicle_number", columnDefinition = "varchar(31)", nullable = false)
     private String vehicleNumber;
 

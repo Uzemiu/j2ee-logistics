@@ -16,8 +16,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.naming.OperationNotSupportedException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
 @Service("orderService")
@@ -65,6 +69,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         return false;
     }
 
+    @Transactional
     @Override
     public Order update(Order order) {
         Order old = getNotNullById(order.getId());
@@ -72,7 +77,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         if(current instanceof Client){
             Assert.isTrue(old.getSender().equals(current), "你没有权限这么做");
         }
-        // TODO: 2021/11/17 管理员是否能更改订单状态
+        // TODO: 2021/11/17 管理员是否能更改订单状态 以及价格
         if(old.getStatus().lessThanOrEqual(OrderStatus.NOT_SENT)){
             // 未发货的情况下才能修改收寄件信息
             old.setSendAddress(order.getSendAddress());
@@ -89,10 +94,11 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
             }
         }
         old.setComment(order.getComment());
-        orderRepository.save(order);
+        orderRepository.save(old);
         return old;
     }
 
+    @Transactional
     @Override
     public Order create(Order order) {
         Order o = orderRepository.save(order);
@@ -100,6 +106,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         trace.setOrder(o);
         trace.setOrderStatus(o.getStatus());
         trace.setInformation("创建订单");
+        transportTraceRepository.save(trace);
         return o;
     }
 
@@ -111,22 +118,44 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         return dto;
     }
 
+    @Transactional
+    @Override
+    public void confirmOrder(Long id) {
+        Order order = getNotNullById(id);
+        Client client = (Client) SecurityUtil.getCurrentUser();
+        Assert.isTrue(order.getSender().equals(client), "你没有权限这么做");
+        Assert.isTrue(order.getStatus().between(OrderStatus.NOT_SENT, OrderStatus.ALREADY_ARRIVED), "只有未收货的订单才能确认收货");
+        order.setStatus(OrderStatus.RECEIPT_CONFIRMED);
+        orderRepository.save(order);
+
+        TransportTrace trace = new TransportTrace();
+        trace.setOrder(order);
+        trace.setOrderStatus(OrderStatus.RECEIPT_CONFIRMED);
+        trace.setInformation("确认收货");
+        transportTraceRepository.save(trace);
+    }
+    
     private void assignVehicle(Order order, Long vehicleId){
-        assignVehicle(order, vehicleService.getNotNullById(vehicleId));
+        if(vehicleId != null){
+            assignVehicle(order, vehicleService.getNotNullById(vehicleId));
+        }
     }
     
     private void assignVehicle(Order order, Vehicle newVehicle){
-        // TODO: 2021/11/17
+        // 实际应该考虑同步问题，可以使用悲观锁
         Vehicle oldVehicle = order.getTransportVehicle();
         if(!Objects.equals(oldVehicle, newVehicle)){
             if(newVehicle != null){
-                Assert.isTrue(newVehicle.getStatus().equals(VehicleStatus.IDLE), "分配的车辆必须是空闲状态");
+                newVehicle = vehicleService.getNotNullById(newVehicle.getId());
+                Assert.isTrue(VehicleStatus.IDLE.equals(newVehicle.getStatus()), "分配的车辆必须是空闲状态");
+                newVehicle.setStatus(VehicleStatus.TASK_ASSIGNED);
+                vehicleService.update(newVehicle);
             }
             if(oldVehicle != null){
                 oldVehicle.setStatus(VehicleStatus.IDLE);
                 vehicleService.update(oldVehicle);
             }
-            order.setTransportVehicle(order.getTransportVehicle());
+            order.setTransportVehicle(newVehicle);
         }
     }
 
@@ -143,5 +172,13 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
                 vehicle.setStatus(VehicleStatus.IDLE);
             }
         }
+    }
+
+    @Override
+    public Order deleteById(Long aLong) {
+        // TODO: 11/20/2021 管理员是否可以删除订单 
+        Order order = super.deleteById(aLong);
+        
+        return order;
     }
 }

@@ -1,11 +1,9 @@
 package com.example.logistics.service.base;
 
-import com.example.logistics.exception.ResouceNotFoundException;
+import com.example.logistics.exception.ResourceNotFoundException;
 import com.example.logistics.repository.BaseRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
-import javax.swing.text.html.parser.Entity;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +52,7 @@ public abstract class AbstractCrudService<ENTITY, ID> implements CrudService<ENT
     public ENTITY getNotNullById(ID id) {
         Assert.notNull(id, "Id must be null");
         return repository.findById(id)
-                .orElseThrow(() -> new ResouceNotFoundException(entityName + "(id: " + id + ") could not be found"));
+                .orElseThrow(() -> new ResourceNotFoundException(entityName + "(id: " + id + ") could not be found"));
     }
 
     @Override
