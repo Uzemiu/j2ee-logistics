@@ -1,11 +1,14 @@
 package com.example.logistics.model.entity;
 
 import com.example.logistics.model.enums.VehicleStatus;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -34,6 +37,7 @@ public class Vehicle extends BaseEntity{
     @Column(name = "status", columnDefinition = "int(11) default 0")
     private VehicleStatus status;
 
+    @ApiModelProperty("只需要传ID")
     @OneToOne
     @JoinColumn(name = "driver_id")
     private Employee driver;

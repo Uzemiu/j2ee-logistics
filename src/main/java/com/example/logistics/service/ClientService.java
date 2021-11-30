@@ -1,5 +1,6 @@
 package com.example.logistics.service;
 
+import com.example.logistics.model.dto.ClientInfoDTO;
 import com.example.logistics.model.dto.UserDTO;
 import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.User;
@@ -16,5 +17,7 @@ public interface ClientService extends UserService<Client> {
      * @throws IllegalArgumentException 登录失败
      */
     Client register(RegisterParam param);
+
+    Client update(ClientInfoDTO client);
 
 }

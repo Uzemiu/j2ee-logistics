@@ -1,6 +1,6 @@
 package com.example.logistics.exception;
 
-public class UnauthenticatedException extends RuntimeException{
+public class UnauthenticatedException extends BadRequestException{
 
     public UnauthenticatedException(){super();}
 

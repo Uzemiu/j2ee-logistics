@@ -16,8 +16,9 @@ public class UserDTO {
     @Length(max = 63, message = "用户名不能超过63个字符")
     private String username;
 
-    @Length(max = 15, message = "真名不能超过15个字符")
-    private String realName;
+    private Integer gender;
 
-    private Role role;
+    private String email;
+
+    private String phoneNumber;
 }

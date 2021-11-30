@@ -3,9 +3,9 @@ package com.example.logistics.model.enums;
 public enum OrderStatus {
 
     /**
-     * 未付款
+     * 默认状态
      */
-    NOT_PAID,
+    ORDER_CREATED,
     /**
      * 未发货
      */

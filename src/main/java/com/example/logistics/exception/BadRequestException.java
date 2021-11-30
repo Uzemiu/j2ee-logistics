@@ -1,6 +1,6 @@
 package com.example.logistics.exception;
 
-public class BadRequestException extends RuntimeException{
+public class BadRequestException extends IllegalArgumentException{
 
     public BadRequestException() {
         super();

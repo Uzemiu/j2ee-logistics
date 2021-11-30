@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -18,4 +19,6 @@ public class TransportTraceDTO {
     private String information;
 
     private OrderStatus orderStatus;
+
+    private Date updateTime;
 }

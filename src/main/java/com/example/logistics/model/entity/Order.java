@@ -31,7 +31,7 @@ public class Order extends BaseEntity{
      * 发件方
      */
     @ManyToOne
-    @JoinColumn(name = "sender_client_id")
+    @JoinColumn(name = "sender_client_id", nullable = false)
     private Client sender;
 
     /**
@@ -90,6 +90,9 @@ public class Order extends BaseEntity{
     @Column(name = "order_status", columnDefinition = "int(11) default 0", nullable = false)
     private OrderStatus status;
 
+    @Column(name = "is_payed", columnDefinition = "bit(1) default false", nullable = false)
+    private Boolean payed;
+
     @Length(max = 1023, message = "备注不能超过1023个字符")
     @Column(name = "comment", columnDefinition = "varchar(1023) default ''")
     private String comment;
@@ -98,7 +101,7 @@ public class Order extends BaseEntity{
      * 分配车辆
      */
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "transport_vehicle_id")
+    @JoinColumn(name = "transport_vehicle_id", unique = true /*一辆车最多被分配到一个订单*/)
     private Vehicle transportVehicle;
 
 }

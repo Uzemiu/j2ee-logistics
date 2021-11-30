@@ -23,7 +23,7 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Slf4j
-@Service("vehicleServiceImpl")
+@Service("vehicleService")
 public class VehicleServiceImpl extends AbstractCrudService<Vehicle, Long> implements VehicleService {
 
     private final VehicleRepository vehicleRepository;

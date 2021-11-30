@@ -1,6 +1,6 @@
 package com.example.logistics.exception;
 
-public class ResourceNotFoundException extends RuntimeException{
+public class ResourceNotFoundException extends BadRequestException{
 
     public ResourceNotFoundException(){super();}
 

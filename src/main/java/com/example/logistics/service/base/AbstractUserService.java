@@ -2,20 +2,17 @@ package com.example.logistics.service.base;
 
 import cn.hutool.crypto.digest.BCrypt;
 import com.example.logistics.exception.BadRequestException;
-import com.example.logistics.model.dto.PageDTO;
 import com.example.logistics.model.dto.UserDTO;
-import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.User;
 import com.example.logistics.model.param.LoginParam;
-import com.example.logistics.repository.BaseRepository;
+import com.example.logistics.model.param.ResetPasswordParam;
 import com.example.logistics.repository.UserRepository;
 import com.example.logistics.service.UserService;
+import com.example.logistics.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 public abstract class AbstractUserService<USER extends User> extends AbstractCrudService<USER, Long> implements UserService<USER> {
 
@@ -35,7 +32,7 @@ public abstract class AbstractUserService<USER extends User> extends AbstractCru
     }
 
     @Override
-    public UserDTO toDto(USER user) {
+    public UserDTO toDto(User user) {
         if(user == null){
             return null;
         }
@@ -70,5 +67,13 @@ public abstract class AbstractUserService<USER extends User> extends AbstractCru
         checkUniqueUsername(username);
         checkUniqueEmail(email);
         checkUniquePhone(phoneNumber);
+    }
+
+    @Override
+    public USER resetPassword(ResetPasswordParam param) {
+        User user = SecurityUtil.getCurrentUser();
+        Assert.isTrue(BCrypt.checkpw(param.getOldPassword(), user.getPassword()), "原密码不符");
+        user.setPassword(BCrypt.hashpw(param.getNewPassword()));
+        return userRepository.save((USER) user);
     }
 }

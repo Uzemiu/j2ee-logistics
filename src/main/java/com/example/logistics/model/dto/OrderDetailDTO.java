@@ -1,14 +1,14 @@
 package com.example.logistics.model.dto;
 
 import com.example.logistics.model.entity.TransportTrace;
+import com.example.logistics.model.entity.Vehicle;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class OrderDetailDTO {
+public class OrderDetailDTO extends OrderDTO{
 
-    private OrderDTO order;
-
-    private List<TransportTraceDTO> traces;
+    // for admin
+    private VehicleDTO transportVehicle;
 }

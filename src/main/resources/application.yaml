@@ -1,10 +1,11 @@
 server:
-  port: 80
+  port: 8080
   servlet:
     session:
       timeout: 12h
       cookie:
         max-age: 12h
+        http-only: false
 
 logging:
   file:
@@ -39,3 +40,20 @@ spring:
     redis:
       repositories:
         enabled: false
+
+alipay:
+  appId: 2021000117670655
+  # 商户私钥，您的PKCS8格式RSA2私钥
+  privateKey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCcG8XjDKl9oC0esKj0xyKSrz1cD9dfzs9ZZGmDuTIHsJzrMd3oO6EAyzX2Wg7qrUnBDD832USKZHIFPx8NbpnIJjhCRbPozbtrHMZPLp/wtRWRHJfAD88nlhtwS12zKf59O76a3zl/buayaNjVZAExz1LnUENWME/Jsm9V6v7A4FTicX2OwNvdz77X22v5nUkmh3BdTn1l2eMRyFoIXnDQpBKJHp0vI83Ht+3NF/9ycY5eD34SHvw5pCx0ChdWNzBFzcLJsnWEx5B2X7CjQMxgg7m05VawUtqG4qaV11ZDUSIBueLymUUpd5WJgAQrz5kw/fdA+Z5D9M8sjDlmWHsLAgMBAAECggEAJWWx3lamM+YvaO7BSwJ5kdJRTMCuw9Dzc2LOtDOlfJoevWlQ09WVGG+WGdIxSJ8C0DBy5Jo0BUNS3VblxX39cSlWyOmR0++VOm/GQinVPwDijcTfxa8D3WPkZt5nMAibYrzxSIC5cYHL2mmrqFMwxhH4tllQCFHCi3snmNmW9fVoEXCdxQJ1QLgMEqQQnELB1RR8dMrCMMGnaAQh71OWeyW8zCRe17OQdIMR10wcXnzdvkugM0rOIGFXIS0LfIt2VslA5jPKxDSN7aS0TamIsaur9gCysgPr+ckEy9h1RRDsc+KUXfcWfpeYF8rFr7Ia3at0y7kaGTDaB9tmGKYPoQKBgQDMrpYIHlR+WLVQLwzHjOuPU6qACzcwjh+FQyElPkjfWqcVfmDHTR1/2Aw3yvTlm5njBqgaO96Owh6lPGlb3VOihaqVYXKEVnyV3f4UngO6RjI/yfLqw+cUr4HunSK9BYsiUGlf/zArlNfm9dwkdvHOCRIU0mTrJjKyXPLL4h6sbQKBgQDDP4Vgm0Vj7NoLWKVeTfwLvxAMaTFXOJYqQP8YS7j8xfKvIpgWhIVbLNuL1fMJfbpQsfnnvD5yof2L31Ar004Uua/eTPmuZIEUQdpOK8Fen01GfqqI1pgG1zssYV4o98Di+zpU5QFSn4wSP1NMp15fFdEaV2VRcKx4oh2aUuoqVwKBgEpfIYq/oonqJ6+D+QvFC46fovM1oA8XhSKB2thSgl4N7Wok6ntgbNiYIxBewY9wc4EHWSt3F44dwM7fXZUQnaQPF4WBy/+EAW7fI8RQCiC0AuwksAxXtG5Su059cDLogb6tIyzLZ7BeO/ji2uOxCHmJ2DUSobLDxWYD2gD1H5odAoGAO6fU4MeQVA+yL3VOUZoSQKSICsK5SKUJfK+PQaUhSFpS5B/1yCuFc24pRniAYY4At1cpvBxQGEZWab45iKpvWPXDPnDWeOpMZhwYz3mfA4I44ikhgd3PZYetlMnLM0k/rhqEoBu4Y75L1edzVCBvPS41TY8WbeO3TsR5twVOdtECgYA9e3dRhKmD6wRkCYaiMd3YZjpapQmMZ8YD/DW6s7lOw+vffwplrc3QuYi4fNpj/UcBWYwJKrWG4OwTFNVwLoQXve0aaEQOgonAxPAXnDQMqHIR/Ylew1RKjaTBNtrtEX8kYNWk1dkDlYS1JA69aVMQHI5ksC5aQPJ/B7FWiIJMCw==
+  # 支付宝公钥,查看地址：https://openhome.com/platform/keyManage.htm 对应APPID下的支付宝公钥。
+  publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1US2S/s0bMhx8jh2zDHPqMGc+02Vb3Uq8PdLdLcjGDA26qO8iG2++JIFKrjiOYWmxTkl8HhNsnaoDordRE8nJc59RDzz8o6hhUDswJDVNfOc1w9GWZzudDvYtoor++UOqYOQZw6r7Zmpr/MEtp8eb7SRru/xqsbvtbjJZ7DaMnpUEVUBCFlCIWGU6U/AglbEx9q/2VyL+y3Q2fQeWNpFwtnzvi/ywiHV3Hwb2JkGm4qmYi0Dh+gFC9CcLMfPyKuOdUT7aDmknt6/gU0b9jj9hRoX5UTN7ppozpAgW79NM7GFSdCHg63NZz5WrLBMWGEk7oS/W7ty9jm/fZ0EiA7MLQIDAQAB
+  # 服务器异步通知页面路径需http://格式的完整路径，不能加?id=123这类自定义参数
+  notifyUrl: http://localhost/api/alipay/notify
+  # 页面跳转同步通知页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数
+  returnUrl: http://localhost/api/alipay/return
+  # 签名方式
+  signType: RSA2
+  # 字符编码格式
+  charset: utf-8
+  # 支付宝网关
+  gatewayUrl: https://openapi.alipaydev.com/gateway.do

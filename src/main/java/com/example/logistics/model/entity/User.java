@@ -30,4 +30,7 @@ public class User extends BaseEntity{
 
     @Column(name = "phone_number", columnDefinition = "varchar(31)", unique = true, nullable = false)
     private String phoneNumber;
+
+    @Column(name = "gender", columnDefinition = "int(11) default 0")
+    private Integer gender;
 }

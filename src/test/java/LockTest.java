@@ -1,4 +1,5 @@
 import com.example.logistics.App;
+import com.example.logistics.controller.VehicleController;
 import com.example.logistics.model.entity.Vehicle;
 import com.example.logistics.model.enums.VehicleStatus;
 import com.example.logistics.repository.VehicleRepository;
@@ -16,6 +17,9 @@ import javax.transaction.Transactional;
 @SpringBootTest(classes = App.class)
 @RunWith(SpringRunner.class)
 public class LockTest {
+
+    @Resource
+    VehicleController vehicleController;
 
     @Resource
     VehicleRepository vehicleRepository;

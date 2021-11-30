@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class OrderQuery extends BaseQuery<Order>{
 
-    private Client sender;
+    private Long senderId;
 
     private OrderStatus status;
 
@@ -24,7 +24,9 @@ public class OrderQuery extends BaseQuery<Order>{
         Specification<Order> specification = super.toSpecification();
         return specification.and((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if(sender != null){
+            if(senderId != null){
+                Client sender = new Client();
+                sender.setId(senderId);
                 predicates.add(criteriaBuilder.equal(root.get("sender"), sender));
             }
 //            if(StringUtils.hasText(name)){
