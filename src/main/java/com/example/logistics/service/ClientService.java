@@ -1,12 +1,8 @@
 package com.example.logistics.service;
 
-import com.example.logistics.model.dto.ClientInfoDTO;
-import com.example.logistics.model.dto.UserDTO;
+import com.example.logistics.model.dto.UserInfoDTO;
 import com.example.logistics.model.entity.Client;
-import com.example.logistics.model.entity.User;
-import com.example.logistics.model.param.LoginParam;
 import com.example.logistics.model.param.RegisterParam;
-import com.example.logistics.service.base.CrudService;
 
 public interface ClientService extends UserService<Client> {
 
@@ -18,6 +14,6 @@ public interface ClientService extends UserService<Client> {
      */
     Client register(RegisterParam param);
 
-    Client update(ClientInfoDTO client);
+    Client update(UserInfoDTO client);
 
 }

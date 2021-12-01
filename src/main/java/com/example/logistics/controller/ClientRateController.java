@@ -1,5 +1,6 @@
 package com.example.logistics.controller;
 
+import com.example.logistics.annotation.AnonymousAccess;
 import com.example.logistics.annotation.Permission;
 import com.example.logistics.model.dto.ClientRateDTO;
 import com.example.logistics.model.entity.ClientRate;
@@ -23,7 +24,7 @@ public class ClientRateController {
     @ApiOperation(value = "查询订单评分信息", notes = "仅登录用户和管理员可查看")
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @GetMapping
-    public BaseResponse<ClientRateDTO> getByOrderId(@RequestBody Long id){
+    public BaseResponse<ClientRateDTO> getByOrderId(Long id){
         Order order = new Order();
         order.setId(id);
         ClientRate rate = clientRateService.getByOrder(order).orElse(null);

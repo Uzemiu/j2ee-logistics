@@ -1,6 +1,7 @@
 package com.example.logistics.model.entity;
 
 import com.example.logistics.model.enums.OrderStatus;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,7 +32,7 @@ public class Order extends BaseEntity{
      * 发件方
      */
     @ManyToOne
-    @JoinColumn(name = "sender_client_id", nullable = false)
+    @JoinColumn(name = "sender_client_id", nullable = false, unique = false)
     private Client sender;
 
     /**
@@ -100,8 +101,15 @@ public class Order extends BaseEntity{
     /**
      * 分配车辆
      */
+    @ApiModelProperty(notes = "只需传入ID")
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transport_vehicle_id", unique = true /*一辆车最多被分配到一个订单*/)
     private Vehicle transportVehicle;
 
+    @Override
+    protected void prePersist() {
+        super.prePersist();
+        payed = false;
+        status = OrderStatus.ORDER_CREATED;
+    }
 }

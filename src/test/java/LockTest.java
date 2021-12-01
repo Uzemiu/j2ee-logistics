@@ -35,10 +35,5 @@ public class LockTest {
         vehicleRepository.save(vehicle);
     }
 
-    @Test
-    public void testSelect(){
-        new Thread(vehicleService::doTest).start();
-        vehicleService.doTest();
-    }
 
 }

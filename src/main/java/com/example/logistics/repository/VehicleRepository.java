@@ -4,6 +4,7 @@ import com.example.logistics.model.entity.Employee;
 import com.example.logistics.model.entity.Vehicle;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +19,9 @@ public interface VehicleRepository extends BaseRepository<Vehicle, Long>, JpaSpe
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select v from Vehicle v where v.id=:id")
     Optional<Vehicle> findByIdPessimistic(Long id);
+
+    @Modifying
+    @Query("update Vehicle v set v.driver = null where v.driver=:driver")
+    void setDriverToNull(Employee driver);
 
 }

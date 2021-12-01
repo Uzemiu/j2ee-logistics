@@ -19,5 +19,4 @@ public interface VehicleService extends CrudService<Vehicle, Long> {
 
     VehicleDTO toDto(Vehicle vehicle);
 
-    void doTest();
 }

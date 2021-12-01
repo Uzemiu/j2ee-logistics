@@ -87,13 +87,4 @@ public class VehicleServiceImpl extends AbstractCrudService<Vehicle, Long> imple
         return dto;
     }
 
-    @Transactional
-    @Override
-    public void doTest() {
-        Vehicle vehicle = vehicleRepository.findByIdPessimistic(1L).get();
-        log.info(Thread.currentThread().getName() + " select: " + vehicle);
-        vehicle.setVehicleNumber(String.valueOf(Math.random()));
-        vehicleRepository.save(vehicle);
-        log.info(Thread.currentThread().getName() + " save: " + vehicle);
-    }
 }

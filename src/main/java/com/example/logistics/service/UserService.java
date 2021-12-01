@@ -1,9 +1,13 @@
 package com.example.logistics.service;
 
 import com.example.logistics.model.dto.UserDTO;
+import com.example.logistics.model.dto.UserInfoDTO;
 import com.example.logistics.model.entity.User;
+import com.example.logistics.model.param.ForgetPasswordParam;
 import com.example.logistics.model.param.LoginParam;
+import com.example.logistics.model.param.ResetEmailParam;
 import com.example.logistics.model.param.ResetPasswordParam;
+import com.example.logistics.model.query.UserQuery;
 import com.example.logistics.service.base.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +24,7 @@ public interface UserService<USER extends User> extends CrudService<USER, Long> 
 
     UserDTO toDto(User user);
 
-    Page<USER> query(Pageable pageable);
+    Page<USER> query(UserQuery<USER> query, Pageable pageable);
 
     void checkUniqueUsername(String username);
 
@@ -31,4 +35,9 @@ public interface UserService<USER extends User> extends CrudService<USER, Long> 
     void checkUniqueColumn(String username, String email, String phoneNumber);
 
     USER resetPassword(ResetPasswordParam param);
+
+    USER forgetPassword(ForgetPasswordParam param);
+
+    USER resetEmail(ResetEmailParam param);
+
 }

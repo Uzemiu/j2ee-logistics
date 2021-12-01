@@ -3,7 +3,7 @@ package com.example.logistics.model.dto;
 import lombok.Data;
 
 @Data
-public class ClientInfoDTO {
+public class UserInfoDTO {
 
     Long id;
 

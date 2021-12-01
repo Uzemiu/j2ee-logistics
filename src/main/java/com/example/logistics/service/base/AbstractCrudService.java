@@ -44,13 +44,13 @@ public abstract class AbstractCrudService<ENTITY, ID> implements CrudService<ENT
 
     @Override
     public Optional<ENTITY> getById(ID id) {
-        Assert.notNull(id, "Id must be null");
+        Assert.notNull(id, "Id must not be null");
         return repository.findById(id);
     }
 
     @Override
     public ENTITY getNotNullById(ID id) {
-        Assert.notNull(id, "Id must be null");
+        Assert.notNull(id, "Id must not be null");
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(entityName + "(id: " + id + ") could not be found"));
     }

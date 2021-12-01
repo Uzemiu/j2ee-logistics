@@ -59,7 +59,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
     @Override
     public boolean cancelOrder(Long id) {
         Order order = getNotNullById(id); // todo pessimistic write
-        if(order.getStatus().lessThan(OrderStatus.ALREADY_ARRIVED)){
+        if(order.getStatus().lessThanOrEqual(OrderStatus.NOT_SENT) && !order.getPayed()){
             // 订单已到达或已结束（确认收货，已取消，丢失）则不能取消订单
             setOrderStatus(order, OrderStatus.CANCELLED);
             // ...省略无数操作
@@ -99,7 +99,6 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
                 if(old.getStatus().equals(OrderStatus.ORDER_CREATED)){
                     old.setPrice(order.getPrice()); // 未支付状态下才能修改价格
                 }
-                assignVehicle(old, order.getTransportVehicle());
             }
         }
         old.setComment(order.getComment());
@@ -164,14 +163,20 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         }
     }
 
+    @Override
+    public Order assignVehicle(Long orderId, Long vehicleId) {
+        Order order = getNotNullById(orderId);
+        assignVehicle(order, vehicleId);
+        return order;
+    }
+
     private void assignVehicle(Order order, Long vehicleId){
-        if(vehicleId != null){
-            assignVehicle(order, vehicleService.getNotNullById(vehicleId));
-        }
+        assignVehicle(order, vehicleId == null ? null : vehicleService.getNotNullById(vehicleId));
+        orderRepository.save(order);
     }
     
     private void assignVehicle(Order order, Vehicle newVehicle){
-        // todo 实际应该考虑同步问题，可以使用悲观锁
+        // todo 实际应该考虑同步问题
         Vehicle oldVehicle = order.getTransportVehicle();
         if(!Objects.equals(oldVehicle, newVehicle)){
             if(newVehicle != null){

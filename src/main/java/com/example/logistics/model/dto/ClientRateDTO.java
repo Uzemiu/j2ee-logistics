@@ -20,9 +20,15 @@ public class ClientRateDTO {
 
     private Long id;
 
-    private Integer score;
+    private Integer itemScore;
 
-    private String comment;
+    private Integer serviceScore;
+
+    private Integer logisticsScore;
+
+    private String advice;
+
+    private String issue;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;

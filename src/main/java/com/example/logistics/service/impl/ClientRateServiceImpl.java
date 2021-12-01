@@ -4,7 +4,6 @@ import com.example.logistics.model.dto.ClientRateDTO;
 import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.ClientRate;
 import com.example.logistics.model.entity.Order;
-import com.example.logistics.model.entity.User;
 import com.example.logistics.model.enums.OrderStatus;
 import com.example.logistics.model.param.ClientRateParam;
 import com.example.logistics.repository.ClientRateRepository;
@@ -39,13 +38,12 @@ public class ClientRateServiceImpl extends AbstractCrudService<ClientRate, Long>
         Order order = orderService.getNotNullById(rate.getOrderId());
         Assert.isTrue(order.getSender().equals(client), "你不能评价他人的订单");
         Assert.isTrue(clientRateRepository.countByOrder(order) == 0, "当前订单已被评价过");
-        Assert.isTrue(order.getStatus().greaterThanOrEqual(OrderStatus.RECEIPT_CONFIRMED), "只能评价已收货的订单");
+        Assert.isTrue(order.getStatus().equals(OrderStatus.RECEIPT_CONFIRMED), "只能评价已收货的订单");
 
         ClientRate clientRate = new ClientRate();
-        clientRate.setOrder(order);
+        BeanUtils.copyProperties(rate, clientRate);
         clientRate.setClient(client);
-        clientRate.setComment(rate.getComment());
-        clientRate.setScore(rate.getScore());
+        clientRate.setOrder(order);
 
         return clientRateRepository.save(clientRate);
     }

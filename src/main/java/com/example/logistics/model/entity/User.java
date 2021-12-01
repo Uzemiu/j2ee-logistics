@@ -4,8 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
@@ -33,4 +37,12 @@ public class User extends BaseEntity{
 
     @Column(name = "gender", columnDefinition = "int(11) default 0")
     private Integer gender;
+
+    @Override
+    protected void prePersist() {
+        super.prePersist();
+        if(gender == null){
+            gender = 0;
+        }
+    }
 }

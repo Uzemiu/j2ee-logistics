@@ -12,9 +12,10 @@ import javax.persistence.*;
 @Table(name = "tbl_employee")
 public class Employee extends User{
 
-    @Column(name = "real_name", columnDefinition = "varchar(16)", nullable = false)
+    @Column(name = "real_name", columnDefinition = "varchar(16) default '真名'", nullable = false)
     private String realName;
 
     @Column(name = "role", columnDefinition = "int(11) default 0", nullable = false)
     Role role;
+
 }

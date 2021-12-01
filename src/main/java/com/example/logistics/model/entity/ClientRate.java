@@ -1,5 +1,6 @@
 package com.example.logistics.model.entity;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,17 +28,25 @@ public class ClientRate extends BaseEntity{
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
+    @ApiModelProperty(notes = "只需传入ID")
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Range(min = 0, max = 5, message = "分数只能在0到5之间")
-    @NotNull(message = "评分不能为空")
-    @Column(name = "score", columnDefinition = "int(11) default 5")
-    private Integer score;
+    @Column(name = "item_score", columnDefinition = "int(11) default 5")
+    private Integer itemScore;
 
-    @Length(max = 1023, message = "评价信息不能超过1023个字符")
-    @Column(name = "comment", columnDefinition = "varchar(1023) default ''")
-    private String comment;
+    @Column(name = "service_score", columnDefinition = "int(11) default 5")
+    private Integer serviceScore;
+
+    @Column(name = "logistics_score", columnDefinition = "int(11) default 5")
+    private Integer logisticsScore;
+
+    @Column(name = "advice", columnDefinition = "varchar(1023) default ''")
+    private String advice;
+
+    @Column(name = "logistic_issue", columnDefinition = "varchar(1023) default ''")
+    private String issue;
+
 
 }

@@ -6,23 +6,32 @@ import com.example.logistics.model.dto.UserDTO;
 import com.example.logistics.model.entity.Employee;
 import com.example.logistics.model.entity.User;
 import com.example.logistics.repository.EmployeeRepository;
+import com.example.logistics.repository.VehicleRepository;
 import com.example.logistics.service.EmployeeService;
 import com.example.logistics.service.base.AbstractUserService;
+import com.example.logistics.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import javax.transaction.Transactional;
 
 @Service("employeeService")
 public class EmployeeServiceImpl extends AbstractUserService<Employee> implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
-    protected EmployeeServiceImpl(EmployeeRepository repository) {
+    private final VehicleRepository vehicleRepository;
+
+    protected EmployeeServiceImpl(EmployeeRepository repository,
+                                  VehicleRepository vehicleRepository) {
         super(repository);
         this.employeeRepository = repository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     @Override
-    public Employee resetPassword(Long employeeId) {
+    public Employee resetPasswordAdmin(Long employeeId) {
         // TODO: 2021/11/23 更改密码后应该强制下线
         Employee employee = getNotNullById(employeeId);
         employee.setPassword(BCrypt.hashpw("ab1234"));
@@ -73,7 +82,22 @@ public class EmployeeServiceImpl extends AbstractUserService<Employee> implement
         }
         old.setRealName(employee.getRealName());
         old.setRole(employee.getRole());
+        old.setGender(employee.getGender());
         // 不更新密码
         return super.update(old);
+    }
+
+    @Transactional
+    @Override
+    public Employee deleteById(Long id) {
+        User user = SecurityUtil.getCurrentUser();
+        Assert.isTrue(!user.getId().equals(id), "不能删除自己");
+
+        Employee employee = new Employee();
+        employee.setId(id);
+        Assert.isTrue(vehicleRepository.countByDriver(employee) == 0, "当前司机已经被分配车辆");
+//        vehicleRepository.setDriverToNull(employee);
+
+        return super.deleteById(id);
     }
 }

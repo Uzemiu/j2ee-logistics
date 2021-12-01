@@ -47,5 +47,6 @@ public interface OrderService extends CrudService<Order, Long> {
      */
     String payOrder(Long orderId);
 
+    Order assignVehicle(Long orderId, Long vehicleId);
 
 }

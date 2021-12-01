@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class LoginParam {
+public class LoginParam extends CaptchaParam{
 
     @NotBlank(message = "用户名不能为空")
     private String username;
@@ -13,9 +13,4 @@ public class LoginParam {
     @NotBlank(message = "密码不能为空")
     private String password;
 
-//    @NotBlank(message = "验证码不能为空")
-    private String captcha;
-
-//    @NotBlank
-    private String captchaUuid;
 }

@@ -17,6 +17,8 @@ public class OrderQuery extends BaseQuery<Order>{
 
     private Long senderId;
 
+    private String receiverPhone;
+
     private OrderStatus status;
 
     @Override
@@ -28,6 +30,9 @@ public class OrderQuery extends BaseQuery<Order>{
                 Client sender = new Client();
                 sender.setId(senderId);
                 predicates.add(criteriaBuilder.equal(root.get("sender"), sender));
+            }
+            if(receiverPhone != null){
+                predicates.add(criteriaBuilder.equal(root.get("receiverPhone"), receiverPhone));
             }
 //            if(StringUtils.hasText(name)){
 //                Predicate nLike = criteriaBuilder.like(root.get("name"),"%" + name + "%");

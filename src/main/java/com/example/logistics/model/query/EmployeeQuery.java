@@ -1,9 +1,6 @@
 package com.example.logistics.model.query;
 
-import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.Employee;
-import com.example.logistics.model.entity.Order;
-import com.example.logistics.model.enums.OrderStatus;
 import com.example.logistics.model.enums.Role;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class EmployeeQuery extends BaseQuery<Employee>{
+public class EmployeeQuery extends UserQuery<Employee> {
 
     private Role role;
 

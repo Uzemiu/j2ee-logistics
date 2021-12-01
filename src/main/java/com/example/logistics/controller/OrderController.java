@@ -1,15 +1,14 @@
 package com.example.logistics.controller;
 
-import com.alipay.api.AlipayApiException;
 import com.example.logistics.annotation.Permission;
-import com.example.logistics.exception.BadRequestException;
 import com.example.logistics.model.dto.OrderDTO;
 import com.example.logistics.model.dto.OrderDetailDTO;
 import com.example.logistics.model.dto.PageDTO;
-import com.example.logistics.model.dto.UserDTO;
 import com.example.logistics.model.entity.*;
 import com.example.logistics.model.enums.OrderStatus;
 import com.example.logistics.model.enums.Role;
+import com.example.logistics.model.param.AssignVehicleParam;
+import com.example.logistics.model.param.CreateOrderParam;
 import com.example.logistics.model.query.OrderQuery;
 import com.example.logistics.model.support.BaseResponse;
 import com.example.logistics.repository.TransportTraceRepository;
@@ -18,6 +17,7 @@ import com.example.logistics.service.OrderService;
 import com.example.logistics.utils.SecurityUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,21 +38,38 @@ public class OrderController {
 
     private final TransportTraceRepository transportTraceRepository;
 
-    @ApiOperation(value = "查询当前用户订单", notes = "仅登录用户可调用")
+    @ApiOperation(value = "查询当前用户发货订单", notes = "仅登录用户可调用")
     @Permission(allowClient = true)
     @GetMapping("/mine")
-    public BaseResponse<PageDTO<OrderDTO>> listOrderByCurrentUser(OrderQuery query,
-                                                                  @PageableDefault(sort = {"createTime"},
-                                                          direction = Sort.Direction.DESC) Pageable pageable){
+    public BaseResponse<PageDTO<OrderDTO>> listSendingOrderByCurrentUser(OrderQuery query,
+                                                                         @PageableDefault(sort = {"createTime"},
+                                                                                 direction = Sort.Direction.DESC) Pageable pageable){
         query.setSenderId(SecurityUtil.getCurrentUser().getId());
         Page<Order> orders = orderService.queryBy(query, pageable);
         return BaseResponse.ok("ok", new PageDTO<>(orders.map(orderService::toDto)));
     }
 
+    @ApiOperation(value = "查询当前用户收货订单", notes = "仅登录用户可调用")
+    @Permission(allowClient = true)
+    @GetMapping("/receive")
+    public BaseResponse<PageDTO<OrderDTO>> listReceivingOrderByCurrentUser(OrderQuery query,
+                                                                           @PageableDefault(sort = {"createTime"},
+                                                                                   direction = Sort.Direction.DESC) Pageable pageable){
+        query.setSenderId(null);
+        query.setReceiverPhone(SecurityUtil.getCurrentUser().getPhoneNumber());
+        Page<Order> orders = orderService.queryBy(query, pageable);
+        return BaseResponse.ok("ok", new PageDTO<>(orders.map(orderService::toDto)));
+    }
+
+
     @ApiOperation(value = "用户创建订单", notes = "仅登录用户可调用")
     @Permission(allowClient = true)
     @PostMapping
-    public BaseResponse<Long> createOrder(@RequestBody @Validated Order order){
+    public BaseResponse<Long> createOrder(@RequestBody @Validated CreateOrderParam param){
+        param.setId(null);
+        Order order = new Order();
+        BeanUtils.copyProperties(param, order);
+        order.setPayed(false);
         order.setSender((Client) SecurityUtil.getCurrentUser());
         order.setStatus(OrderStatus.ORDER_CREATED);
         order.setTransportVehicle(null);
@@ -87,35 +104,31 @@ public class OrderController {
     @ApiOperation(value = "更新订单信息", notes = "仅登录用户和管理员可调用")
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @PutMapping
-    public BaseResponse<?> updateOrder(@RequestBody @Validated Order order){
+    public BaseResponse<?> updateOrder(@RequestBody @Validated CreateOrderParam param){
+        Order order = new Order();
+        BeanUtils.copyProperties(param, order);
+        // no update vehicle
         orderService.update(order);
+        return BaseResponse.ok();
+    }
+
+    @ApiOperation(value = "分配车辆", notes = "仅管理员可调用")
+    @Permission(allowRoles = Role.ADMIN)
+    @PostMapping("vehicle")
+    public BaseResponse<?> assignVehicle(@RequestBody @Validated AssignVehicleParam param){
+        orderService.assignVehicle(param.getOrderId(), param.getVehicleId());
         return BaseResponse.ok();
     }
 
     @ApiOperation(value = "管理员查看订单", notes = "仅管理员可调用")
     @Permission(allowRoles = Role.ADMIN)
-    @GetMapping("/list")
+    @GetMapping("list")
     public BaseResponse<PageDTO<OrderDetailDTO>> listOrder(OrderQuery query,
                                                            @PageableDefault(sort = {"createTime"},
-                                             direction = Sort.Direction.DESC) Pageable pageable){
+                                                                   direction = Sort.Direction.DESC) Pageable pageable){
         Page<Order> orders = orderService.queryBy(query, pageable);
         // 管理员能查询到车辆分配信息
         return BaseResponse.ok("ok", new PageDTO<>(orders.map(orderService::toDetailDto)));
     }
 
-
-    @Permission(allowRoles = Role.ADMIN)
-    public BaseResponse<?> assignIdleVehicle(){
-        // TODO: 11/20/2021
-        return BaseResponse.ok();
-    }
-
-    @ApiOperation(value = "删除订单", notes = "仅管理员可调用")
-    @Permission(allowRoles = Role.ADMIN)
-    @DeleteMapping
-    public BaseResponse<?> deleteOrder(@RequestBody Long id){
-        // TODO: 11/20/2021  管理员能否删除订单
-        orderService.deleteById(id);
-        return BaseResponse.ok();
-    }
 }

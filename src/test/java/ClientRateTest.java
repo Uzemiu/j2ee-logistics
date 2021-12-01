@@ -48,7 +48,7 @@ public class ClientRateTest {
         // set client
           TestUtils.loginClient(clientService);
         // given current user's order;
-        PageDTO<OrderDTO> dto = orderController.listOrderByCurrentUser(new OrderQuery(),  TestUtils.defaultPageable()).getData();
+        PageDTO<OrderDTO> dto = orderController.listSendingOrderByCurrentUser(new OrderQuery(),  TestUtils.defaultPageable()).getData();
         orders = dto.getContent();
 
         OrderDTO order1 = orders.get(0);
@@ -83,7 +83,7 @@ public class ClientRateTest {
             // illegal range
             ClientRateParam param = new ClientRateParam();
             param.setOrderId(orders.get(0).getId());
-            param.setScore(6);
+            param.setItemScore(6);
             clientRateController.rateOrder(param);
             TestUtils.notReached();
         } catch (RuntimeException ignored){
@@ -98,8 +98,8 @@ public class ClientRateTest {
 
         ClientRateParam param = new ClientRateParam();
         param.setOrderId(orders.get(0).getId());
-        param.setScore(4);
-        param.setComment("很好很给力");
+        param.setItemScore(4);
+        param.setAdvice("很好很给力");
         clientRateController.rateOrder(param);
     }
 

@@ -4,6 +4,7 @@ import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.Vehicle;
 import com.example.logistics.model.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -18,9 +19,12 @@ public class OrderDTO {
 
     private Long id;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UserDTO sender;
 
     private String itemName;
+
+    private Integer itemCount;
 
     private Double itemWeight;
 
@@ -38,15 +42,19 @@ public class OrderDTO {
 
     private String receiverName;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private OrderStatus status;
 
     private String comment;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Boolean payed;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 

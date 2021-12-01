@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.security.SecurityConfig;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -29,7 +30,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-        HttpSession session = httpServletRequest.getSession();
+        String sid = httpServletRequest.getHeader("Authorization");
+        HttpSession session = null;
+        if(StringUtils.hasText(sid)){
+            session = SessionManager.getSessoion(sid);
+        }
+        if(session == null){
+            session = httpServletRequest.getSession();
+        }
         User user = (User) session.getAttribute("user");
         SecurityUtil.setCurrentUser(user);
 //        String token = TokenUtil.resolveToken(httpServletRequest);

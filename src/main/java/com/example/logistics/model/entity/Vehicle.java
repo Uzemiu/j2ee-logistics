@@ -37,7 +37,7 @@ public class Vehicle extends BaseEntity{
     @Column(name = "status", columnDefinition = "int(11) default 0")
     private VehicleStatus status;
 
-    @ApiModelProperty("只需要传ID")
+    @ApiModelProperty(notes = "只需要传ID")
     @OneToOne
     @JoinColumn(name = "driver_id")
     private Employee driver;
