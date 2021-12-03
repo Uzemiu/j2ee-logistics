@@ -38,7 +38,7 @@ public class TransportTraceController {
     @ApiOperation(value = "查询订单物流详细信息", notes = "登录用户和管理员可调用")
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @GetMapping
-    public BaseResponse<List<TransportTraceDTO>> listByOrderId(@RequestBody Long id){
+    public BaseResponse<List<TransportTraceDTO>> listByOrderId(Long id){
         Order order = new Order();
         order.setId(id);
         List<TransportTraceDTO> traces = transportTraceRepository.findByOrder(order).stream().map(this::toDto).collect(Collectors.toList());

@@ -13,15 +13,15 @@ public class ClientRateParam {
     @NotNull
     Long orderId;
 
-    @Range(min = 1, max = 5, message = "货物满意度分数只能在0到5之间")
+    @Range(min = 1, max = 5, message = "货物满意度分数只能在1到5之间")
     @NotNull(message = "货物评分不能为空")
     private Integer itemScore;
 
-    @Range(min = 1, max = 5, message = "服务满意度分数只能在0到5之间")
+    @Range(min = 1, max = 5, message = "服务满意度分数只能在1到5之间")
     @NotNull(message = "服务满意度评分不能为空")
     private Integer serviceScore;
 
-    @Range(min = 1, max = 5, message = "物流满意度分数只能在0到5之间")
+    @Range(min = 1, max = 5, message = "物流满意度分数只能在1到5之间")
     @NotNull(message = "物流满意度评分不能为空")
     private Integer logisticsScore;
 

@@ -36,7 +36,12 @@ public class OrderController {
 
     private final AlipayService alipayService;
 
-    private final TransportTraceRepository transportTraceRepository;
+    @ApiOperation(value = "根据车辆ID查询订单", notes = "仅登录用户可调用")
+    @Permission(allowRoles = Role.ADMIN)
+    @GetMapping("/vehicle")
+    public BaseResponse<OrderDTO> getOrderByVehicleId(Long id){
+        return BaseResponse.ok("ok", orderService.toDto(orderService.getOrderByVehicleId(id).orElse(null)));
+    }
 
     @ApiOperation(value = "查询当前用户发货订单", notes = "仅登录用户可调用")
     @Permission(allowClient = true)

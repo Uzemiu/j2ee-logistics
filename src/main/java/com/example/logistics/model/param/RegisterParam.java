@@ -10,8 +10,8 @@ import javax.validation.constraints.Pattern;
 @Data
 public class RegisterParam extends CaptchaParam{
 
-    @Pattern(regexp = "^[0-9A-Za-z]{6,31}$",
-            message = "用户名长度须在6~31个字符之间且只能由字母和数字组成")
+    @Pattern(regexp = "^[0-9A-Za-z]{5,31}$",
+            message = "用户名长度须在5~31个字符之间且只能由字母和数字组成")
     private String username;
 
     @Pattern(regexp = "^[0-9A-Za-z@#$%^&*()_+!]{6,31}$",

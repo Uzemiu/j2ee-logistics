@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service("orderService")
 public class OrderServiceImpl extends AbstractCrudService<Order, Long> implements OrderService {
@@ -122,12 +123,16 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
     public OrderDetailDTO toDetailDto(Order order) {
         OrderDetailDTO dto = new OrderDetailDTO();
         BeanUtils.copyProperties(order, dto);
+        dto.setTransportVehicle(vehicleService.toDto(order.getTransportVehicle()));
         dto.setSender(clientService.toDto(order.getSender()));
         return dto;
     }
 
     @Override
     public OrderDTO toDto(Order order) {
+        if(order == null){
+            return null;
+        }
         OrderDTO dto = new OrderDTO();
         BeanUtils.copyProperties(order, dto);
         dto.setSender(clientService.toDto(order.getSender()));
@@ -137,9 +142,10 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
     @Transactional
     @Override
     public void confirmOrder(Long id) {
-        Order order = getNotNullById(id); // TODO: 2021/11/23 pessimistic write
+        Order order = getNotNullById(id);
         Client client = (Client) SecurityUtil.getCurrentUser();
-        Assert.isTrue(order.getSender().equals(client), "你没有权限这么做");
+        Assert.isTrue(order.getSender().equals(client)
+                || order.getReceiverPhone().equals(client.getPhoneNumber()), "你没有权限这么做");
         Assert.isTrue(order.getStatus().lessThanOrEqual(OrderStatus.ALREADY_ARRIVED), "只有未收货的订单才能确认收货");
         setOrderStatus(order, OrderStatus.RECEIPT_CONFIRMED);
         orderRepository.save(order);
@@ -154,6 +160,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
     @Override
     public String payOrder(Long orderId) {
         Order order = getNotNullById(orderId);
+        Assert.isTrue(!order.getPayed(), "已经支付过当前订单");
         orderRepository.updatePayedStatus(orderId, true);
         try {
             return alipayService.payAsPc(order);
@@ -209,10 +216,14 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
     }
 
     @Override
+    public Optional<Order> getOrderByVehicleId(Long vehicleId) {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setId(vehicleId);
+        return orderRepository.findByTransportVehicle(vehicle);
+    }
+
+    @Override
     public Order deleteById(Long aLong) {
-        // TODO: 11/20/2021 管理员是否可以删除订单 
-        Order order = super.deleteById(aLong);
-        
-        return order;
+        throw new BadRequestException("无法删除订单");
     }
 }

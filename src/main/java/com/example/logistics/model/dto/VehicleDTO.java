@@ -18,4 +18,5 @@ public class VehicleDTO {
     private VehicleStatus status;
 
     private UserDTO driver;
+
 }

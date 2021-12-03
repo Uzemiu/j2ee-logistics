@@ -81,6 +81,9 @@ public class VehicleServiceImpl extends AbstractCrudService<Vehicle, Long> imple
 
     @Override
     public VehicleDTO toDto(Vehicle vehicle) {
+        if(vehicle == null){
+            return null;
+        }
         VehicleDTO dto = new VehicleDTO();
         BeanUtils.copyProperties(vehicle, dto);
         dto.setDriver(employeeService.toDto(vehicle.getDriver()));

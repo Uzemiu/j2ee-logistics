@@ -36,8 +36,9 @@ public class ClientRateServiceImpl extends AbstractCrudService<ClientRate, Long>
         Assert.isTrue(SecurityUtil.isClient(), "只有客户才能评价订单");
         Client client = (Client) SecurityUtil.getCurrentUser();
         Order order = orderService.getNotNullById(rate.getOrderId());
-        Assert.isTrue(order.getSender().equals(client), "你不能评价他人的订单");
-        Assert.isTrue(clientRateRepository.countByOrder(order) == 0, "当前订单已被评价过");
+        Assert.isTrue(order.getSender().equals(client)
+                || order.getReceiverPhone().equals(client.getPhoneNumber()), "你不能评价他人的订单");
+        Assert.isTrue(clientRateRepository.countByOrderAndClient(order, client) == 0, "您已评价过当前订单");
         Assert.isTrue(order.getStatus().equals(OrderStatus.RECEIPT_CONFIRMED), "只能评价已收货的订单");
 
         ClientRate clientRate = new ClientRate();
@@ -52,6 +53,11 @@ public class ClientRateServiceImpl extends AbstractCrudService<ClientRate, Long>
     public Optional<ClientRate> getByOrder(Order order) {
         Assert.notNull(order, "Order must not be null");
         return clientRateRepository.findByOrder(order);
+    }
+
+    @Override
+    public Optional<ClientRate> getByOrderAndClient(Order order, Client client) {
+        return clientRateRepository.findByOrderAndClient(order, client);
     }
 
     @Override

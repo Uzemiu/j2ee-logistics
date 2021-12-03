@@ -6,12 +6,14 @@ import com.example.logistics.model.dto.UserInfoDTO;
 import com.example.logistics.model.dto.UserDTO;
 import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.User;
+import com.example.logistics.model.param.ForgetPasswordParam;
 import com.example.logistics.model.param.LoginParam;
 import com.example.logistics.model.param.RegisterParam;
 import com.example.logistics.model.param.ResetPasswordParam;
 import com.example.logistics.model.support.BaseResponse;
 import com.example.logistics.service.CaptchaService;
 import com.example.logistics.service.ClientService;
+import com.example.logistics.service.UserService;
 import com.example.logistics.utils.SecurityUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +58,15 @@ public class ClientController {
     public BaseResponse<?> resetPassword(@RequestBody @Validated ResetPasswordParam param, @ApiIgnore HttpSession session){
         captchaService.assertCaptcha(param);
         session.setAttribute("user", clientService.resetPassword(param));
+        return BaseResponse.ok();
+    }
+
+    @ApiOperation(value = "忘记密码", notes = "需要验证码")
+    @AnonymousAccess
+    @PostMapping("forget-password")
+    public BaseResponse<?> forgetPassword(@RequestBody @Validated ForgetPasswordParam param, @ApiIgnore HttpSession session){
+        captchaService.assertCaptcha(param);
+        session.setAttribute("user", clientService.forgetPassword(param));
         return BaseResponse.ok();
     }
 

@@ -1,6 +1,7 @@
 package com.example.logistics.service;
 
 import com.example.logistics.model.dto.ClientRateDTO;
+import com.example.logistics.model.entity.Client;
 import com.example.logistics.model.entity.ClientRate;
 import com.example.logistics.model.entity.Order;
 import com.example.logistics.model.param.ClientRateParam;
@@ -14,6 +15,8 @@ public interface ClientRateService extends CrudService<ClientRate, Long> {
     ClientRate rateOrder(ClientRateParam rate);
 
     Optional<ClientRate> getByOrder(Order order);
+
+    Optional<ClientRate> getByOrderAndClient(Order order, Client client);
 
     ClientRateDTO toDto(ClientRate clientRate);
 }

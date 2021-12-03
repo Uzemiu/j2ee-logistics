@@ -8,6 +8,8 @@ import com.example.logistics.service.base.CrudService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface OrderService extends CrudService<Order, Long> {
 
     Page<Order> queryBy(OrderQuery query, Pageable pageable);
@@ -48,5 +50,7 @@ public interface OrderService extends CrudService<Order, Long> {
     String payOrder(Long orderId);
 
     Order assignVehicle(Long orderId, Long vehicleId);
+
+    Optional<Order> getOrderByVehicleId(Long vehicleId);
 
 }

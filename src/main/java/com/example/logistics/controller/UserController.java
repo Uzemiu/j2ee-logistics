@@ -61,16 +61,6 @@ public class UserController {
         return BaseResponse.ok();
     }
 
-    @ApiOperation(value = "忘记密码", notes = "需要验证码")
-    @AnonymousAccess
-    @PostMapping("forget-password")
-    public BaseResponse<?> forgetPassword(@RequestBody @Validated ForgetPasswordParam param, @ApiIgnore HttpSession session){
-        captchaService.assertCaptcha(param);
-        UserService<? extends User> userService =  SecurityUtil.isClient() ? clientService : employeeService;
-        session.setAttribute("user", userService.forgetPassword(param));
-        return BaseResponse.ok();
-    }
-
     @ApiOperation(value = "重置邮箱", notes = "仅登录用户可调用，需要验证码")
     @Permission(allowClient = true, allowEmployee = true)
     @PostMapping("reset-email")
