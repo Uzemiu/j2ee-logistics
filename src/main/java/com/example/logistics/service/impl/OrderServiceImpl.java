@@ -63,6 +63,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         if(order.getStatus().lessThanOrEqual(OrderStatus.NOT_SENT) && !order.getPayed()){
             // 订单已到达或已结束（确认收货，已取消，丢失）则不能取消订单
             setOrderStatus(order, OrderStatus.CANCELLED);
+            assignVehicle(order, (Vehicle) null);
             // ...省略无数操作
             orderRepository.save(order);
             TransportTrace trace = new TransportTrace();
@@ -146,7 +147,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         Client client = (Client) SecurityUtil.getCurrentUser();
         Assert.isTrue(order.getSender().equals(client)
                 || order.getReceiverPhone().equals(client.getPhoneNumber()), "你没有权限这么做");
-        Assert.isTrue(order.getStatus().lessThanOrEqual(OrderStatus.ALREADY_ARRIVED), "只有未收货的订单才能确认收货");
+        Assert.isTrue(order.getStatus().between(OrderStatus.NOT_SENT, OrderStatus.ALREADY_ARRIVED), "只有未收货的订单才能确认收货");
         setOrderStatus(order, OrderStatus.RECEIPT_CONFIRMED);
         orderRepository.save(order);
 
@@ -188,6 +189,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
         if(!Objects.equals(oldVehicle, newVehicle)){
             if(newVehicle != null){
                 newVehicle = vehicleService.getNotNullById(newVehicle.getId());
+                Assert.notNull(newVehicle.getDriver(), "新车辆还未分配司机");
                 Assert.isTrue(VehicleStatus.IDLE.equals(newVehicle.getStatus()), "分配的车辆必须是空闲状态");
                 newVehicle.setStatus(VehicleStatus.TASK_ASSIGNED);
                 vehicleService.update(newVehicle);
@@ -217,9 +219,7 @@ public class OrderServiceImpl extends AbstractCrudService<Order, Long> implement
 
     @Override
     public Optional<Order> getOrderByVehicleId(Long vehicleId) {
-        Vehicle vehicle = new Vehicle();
-        vehicle.setId(vehicleId);
-        return orderRepository.findByTransportVehicle(vehicle);
+        return orderRepository.findByTransportVehicle(vehicleId);
     }
 
     @Override

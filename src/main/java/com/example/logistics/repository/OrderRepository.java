@@ -19,5 +19,6 @@ public interface OrderRepository extends BaseRepository<Order, Long>, JpaSpecifi
     @Query("update Order o set o.payed = :payed where o.id = :id")
     void updatePayedStatus(@Param("id") Long id, @Param("payed") boolean payed);
 
-    Optional<Order> findByTransportVehicle(Vehicle transportVehicle);
+    @Query("select o from Order o where o.transportVehicle.id = :id")
+    Optional<Order> findByTransportVehicle(@Param("id") Long id);
 }

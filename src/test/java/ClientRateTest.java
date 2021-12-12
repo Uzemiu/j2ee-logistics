@@ -57,39 +57,29 @@ public class ClientRateTest {
         }
     }
 
-    @Test
-    public void illegalRate(){
-        try{
-            // not found
-            ClientRateParam param = new ClientRateParam();
-            param.setOrderId(2222L);
-            clientRateController.rateOrder(param);
-            TestUtils.notReached();
-        } catch (RuntimeException ignored){
-
-        }
-
-        try{
-            // not confirmed
-            ClientRateParam param = new ClientRateParam();
-            param.setOrderId(orders.get(1).getId());
-            clientRateController.rateOrder(param);
-            TestUtils.notReached();
-        } catch (RuntimeException ignored){
-
-        }
-
-        try{
-            // illegal range
-            ClientRateParam param = new ClientRateParam();
-            param.setOrderId(orders.get(0).getId());
-            param.setItemScore(6);
-            clientRateController.rateOrder(param);
-            TestUtils.notReached();
-        } catch (RuntimeException ignored){
-
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void illegalRate1(){
+        // not found
+        ClientRateParam param = new ClientRateParam();
+        param.setOrderId(2222L);
+        clientRateController.rateOrder(param);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void illegalRate2(){
+        ClientRateParam param = new ClientRateParam();
+        param.setOrderId(orders.get(1).getId());
+        clientRateController.rateOrder(param);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void illegalRate3(){
+        ClientRateParam param = new ClientRateParam();
+        param.setOrderId(orders.get(0).getId());
+        param.setItemScore(6);
+        clientRateController.rateOrder(param);
+    }
+
 
     @Test
     public void legalRate(){

@@ -78,7 +78,10 @@ public class OrderController {
         order.setSender((Client) SecurityUtil.getCurrentUser());
         order.setStatus(OrderStatus.ORDER_CREATED);
         order.setTransportVehicle(null);
-        order.setPrice(BigDecimal.valueOf(Math.random() * 100));
+
+        double volume = param.getItemVolume() == null ? 0 : param.getItemVolume();
+        double price = Math.max(param.getItemWeight() * 2 + 10, volume / 0.012 / 0.1);
+        order.setPrice(BigDecimal.valueOf(price));
         Order res = orderService.create(order);
         return BaseResponse.ok("ok", res.getId());
     }

@@ -1,39 +1,48 @@
 package com.example.logistics.model.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
 public enum OrderStatus {
 
     /**
      * 默认状态
      */
-    ORDER_CREATED,
+    ORDER_CREATED("订单已创建"),
     /**
      * 未发货
      */
-    NOT_SENT,
+    NOT_SENT("等待发货"),
     /**
      * 待运输(已揽件)
      */
-    WAITING_FOR_TRANSPORTATION,
+    WAITING_FOR_TRANSPORTATION("货物等待运输"),
     /**
      * 运输中
      */
-    ON_THE_WAY,
+    ON_THE_WAY("货物在运输途中"),
     /**
      * 已送达
      */
-    ALREADY_ARRIVED,
+    ALREADY_ARRIVED("货物已送达"),
     /**
      * 确认收货
      */
-    RECEIPT_CONFIRMED,
+    RECEIPT_CONFIRMED("确认收货"),
     /**
      * 已取消
      */
-    CANCELLED,
+    CANCELLED("订单已被取消"),
     /**
      * 丢失
      */
-    LOST;
+    LOST("货物丢失");
+
+    private final String description;
 
     public boolean lessThan(OrderStatus status){
         return ordinal() < status.ordinal();

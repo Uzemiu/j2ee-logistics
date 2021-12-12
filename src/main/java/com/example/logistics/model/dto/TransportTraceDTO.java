@@ -2,6 +2,7 @@ package com.example.logistics.model.dto;
 
 import com.example.logistics.model.entity.Order;
 import com.example.logistics.model.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,5 +21,6 @@ public class TransportTraceDTO {
 
     private OrderStatus orderStatus;
 
-    private Date updateTime;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date traceTime;
 }

@@ -14,10 +14,6 @@ import org.springframework.stereotype.Component;
 
 public class TestUtils{
 
-    public static void notReached(){
-        throw new IllegalArgumentException("Not Reached");
-    }
-
     public static Pageable defaultPageable(){
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         return PageRequest.of(0,10,sort);

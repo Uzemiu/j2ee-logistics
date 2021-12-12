@@ -10,6 +10,7 @@ import com.example.logistics.model.enums.OrderStatus;
 import com.example.logistics.model.enums.Role;
 import com.example.logistics.model.enums.VehicleStatus;
 import com.example.logistics.model.support.BaseResponse;
+import com.example.logistics.repository.OrderRepository;
 import com.example.logistics.repository.TransportTraceRepository;
 import com.example.logistics.repository.VehicleRepository;
 import com.example.logistics.service.OrderService;
@@ -35,6 +36,8 @@ public class TransportTraceController {
 
     private final OrderService orderService;
 
+    private final OrderRepository orderRepository;
+
     @ApiOperation(value = "查询订单物流详细信息", notes = "登录用户和管理员可调用")
     @Permission(allowClient = true, allowRoles = Role.ADMIN)
     @GetMapping
@@ -50,22 +53,26 @@ public class TransportTraceController {
     @PostMapping("random")
     public BaseResponse<List<TransportTraceDTO>> generateRandomTraces(@RequestBody Long id){
         Order order = orderService.getNotNullById(id);
+        List<TransportTrace> preTraces = transportTraceRepository.findByOrder(order);
+        long startTimeOffset = preTraces.get(preTraces.size() - 1).getTraceTime().getTime();
 
         List<TransportTrace> traces = new ArrayList<>();
         Random random = new Random();
-        long randomEndTime = System.currentTimeMillis() + (random.nextInt(36) + 36) * 3600_000;
+        long randomEndTime = startTimeOffset + (random.nextInt(24) + 36) * 60 * 60_000; //24h~60h
         OrderStatus[] orderStatuses = OrderStatus.class.getEnumConstants();
-        int endStatus = OrderStatus.RECEIPT_CONFIRMED.ordinal(); // 随机生成状态到确认收货（不包括）
+        int endStatus = order.getTransportVehicle() == null        // 随机生成状态到确认收货（包括）
+                ? OrderStatus.WAITING_FOR_TRANSPORTATION.ordinal() // 未分配车辆则只能到等待运输
+                : OrderStatus.ALREADY_ARRIVED.ordinal();
 
         int traceStatus = order.getStatus().ordinal() + 1;
-        // 以分钟为单位
-        long traceTime = System.currentTimeMillis() + (random.nextInt(18 * 60) + 60) * 60_000;
-        for(;traceTime < randomEndTime && traceStatus < endStatus;
-            traceTime += (random.nextInt(18 * 60) + 60) * 60_000, traceStatus++){
+        long traceTime = startTimeOffset + (random.nextInt(18 * 60) + (6 * 60)) * 60_000; //每个阶段6h~24h
+        for(;traceTime < randomEndTime && traceStatus <= endStatus;
+            traceTime += (random.nextInt(18 * 60) + (6 * 60)) * 60_000, traceStatus++){
             TransportTrace trace = new TransportTrace();
             trace.setTraceTime(new Date(traceTime));
             trace.setOrder(order);
             trace.setOrderStatus(orderStatuses[traceStatus]);
+            trace.setInformation(orderStatuses[traceStatus].getDescription());
             traces.add(trace);
         }
         transportTraceRepository.saveAll(traces);
@@ -73,15 +80,18 @@ public class TransportTraceController {
         if(order.getStatus().lessThan(OrderStatus.RECEIPT_CONFIRMED)){
             // 用户没有提前确认收货
             order.setStatus(orderStatuses[traceStatus - 1]);
-            orderService.update(order);
+            orderRepository.save(order);
         }
 
-        if(traceStatus == endStatus - 1){
+        if(traceStatus == OrderStatus.ALREADY_ARRIVED.ordinal()){
             // 模拟送货完成，设置车辆状态
             Vehicle vehicle = order.getTransportVehicle();
             if(vehicle != null){
                 vehicle.setStatus(VehicleStatus.IDLE);
                 vehicleRepository.save(vehicle);
+            } else {
+                order.setTransportVehicle(null);
+                orderRepository.save(order);
             }
         }
 

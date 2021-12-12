@@ -35,4 +35,14 @@ public class TransportTrace extends BaseEntity {
     @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus;
 
+    @Override
+    protected void prePersist() {
+        super.prePersist();
+        if(information == null){
+            information = "";
+        }
+        if(traceTime == null){
+            traceTime = new Date();
+        }
+    }
 }
